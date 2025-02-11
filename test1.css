@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'ernest', serif;
+    src: url('NewFont-Regular.otf') format('opentype');
+}
+
+*{
+    font-family: 'ernest', serif;
+}
