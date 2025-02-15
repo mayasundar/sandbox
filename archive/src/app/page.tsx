@@ -2,8 +2,15 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
+interface Item {
+    id: number;
+    name: string;
+    description: string;
+    img: string;
+    tags: string;
+}
 export default function Home() {
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
     fetch("/api", {
@@ -18,21 +25,31 @@ export default function Home() {
   }, []);
 
   const collection = items.map((item) => {
+      const parseTags = (): string[] => {
+          if (!item.tags) return [];
+          try {
+              return JSON.parse(item.tags) as string[];
+          } catch (e) {
+              console.error("Error parsing tags:", e);
+              return [];
+          }
+      };
+      const tags = parseTags();
     return (
         <div key={item.id} className="mb-8">
           <Image src={item.img} alt={item.name} width={245} height={342} />
           <h2 className="mt-2 text-xl font-bold">{item.name}</h2>
           <p className="mt-1 text-gray-700 dark:text-gray-300">{item.description}</p>
-          {item.tags && (
+          {tags.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
-                {JSON.parse(item.tags).map((tag, index) => (
-                    <span
-                        key={index}
-                        className="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded-full text-xs"
-                    >
+                  {tags.map((tag, index) => (
+                      <span
+                          key={index}
+                          className="px-2 py-1 bg-gray-200 dark:bg-gray-800 rounded-full text-xs"
+                      >
                 {tag}
               </span>
-                ))}
+                  ))}
               </div>
           )}
         </div>
